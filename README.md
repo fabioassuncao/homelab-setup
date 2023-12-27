@@ -33,6 +33,8 @@ OPTIONS:
 --spaces                    Subfolders where applications will be allocated (eg. apps, backups)
 --root-ssh-passphrase       Provides a passphrase for the ssh key
 --ssh-passphrase            Provides a passphrase for the ssh key
+--ip-address                Main node IP address
+--local                     It determines whether it is a local installation or online, such as a VPS
 -f|--force                  Force install/re-install
 
 OPTIONS (Webhook):

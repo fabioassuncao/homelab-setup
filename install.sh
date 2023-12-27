@@ -7,15 +7,13 @@ ROOT_SSH_PASSPHRASE=
 # Defaults
 : ${SSH_KEYSCAN:='bitbucket.org,gitlab.com,github.com'}
 : ${SPACES:='apps,backups'}
-
 : ${DEFAULT_TIMEZONE:='America/Sao_Paulo'}
 : ${ROOT_PASSWORD:=$(openssl rand -hex 8)}
-
 : ${DEFAULT_USER:='cubed'}
 : ${DEFAULT_USER_PASSWORD:=$(openssl rand -hex 8)}
 : ${DEFAULT_WORKDIR:='/home/cubed'}
-
 : ${FORCE_INSTALL:=false}
+: ${RUNNING_LOCAL:=false}
 
 WEBHOOK_URL=
 
@@ -36,6 +34,8 @@ OPTIONS:
 --spaces                    Subfolders where applications will be allocated (eg. apps, backups)
 --root-ssh-passphrase       Provides a passphrase for the ssh key
 --ssh-passphrase            Provides a passphrase for the ssh key
+--ip-address                Main node IP address
+--local                     It determines whether it is a local installation or online, such as a VPS
 -f|--force                  Force install/re-install
 
 OPTIONS (Webhook):
@@ -58,8 +58,18 @@ while [[ $# -gt 0 ]]; do
         shift 1
         ;;
 
+    --local)
+        RUNNING_LOCAL=true
+        shift 1
+        ;;
+
     --root-ssh-passphrase)
         ROOT_SSH_PASSPHRASE="$2"
+        shift 2
+        ;;
+
+    --ip-address)
+        IP_ADRESS="$2"
         shift 2
         ;;
 
@@ -199,13 +209,22 @@ function configure_firewall() {
 }
 
 function setup_caprover() {
+
+    if [ "$RUNNING_LOCAL" ]; then
+        IP_ADDRESS='127.0.0.1'
+    else
+        IP_ADDRESS=$(curl -s checkip.amazonaws.com)
+    fi
+
     docker run \
         -p 80:80 \
         -p 443:443 \
         -p 3000:3000 \
         -e ACCEPTED_TERMS=true \
+        -e MAIN_NODE_IP_ADDRESS=$IP_ADDRESS \
         -v /var/run/docker.sock:/var/run/docker.sock \
-        -v /captain:/captain caprover/caprover
+        -v /captain:/captain \
+        caprover/caprover
 }
 
 if [ "$(id -u)" != "0" ]; then
@@ -231,7 +250,7 @@ apt-get update -qq >/dev/null
 timedatectl set-timezone $DEFAULT_TIMEZONE
 
 setup_log "---> 🔄 Installing essential programs (git zip unzip curl wget acl apache2-utils nfs-common)."
-apt-get install -y -qq --no-install-recommends git zip unzip curl wget acl apache2-utils nfs-common
+apt-get install -y -qq --no-install-recommends git zip unzip curl wget acl apache2-utils nfs-common net-tools
 
 if [ -x "$(command -v docker)" ]; then
     docker_reset
