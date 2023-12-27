@@ -24,7 +24,7 @@ usage() {
     cat 1>&2 <<HERE
 Script for initial configurations of Docker, Docker Swarm and CapRover.
 USAGE:
-    wget -qO- https://fabioassuncao.com/gh/homelab-setup/install.sh | bash -s -- [OPTIONS]
+    curl -sSL https://fabioassuncao.com/gh/homelab-setup/install.sh | bash -s -- [OPTIONS]
 
 OPTIONS:
 -h|--help                   Print help
