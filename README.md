@@ -10,7 +10,7 @@ To do the setup, download and run the script `install.sh` or if you prefer (proc
 
 ## Usage
 ~~~
-wget -qO- https://fabioassuncao.com/gh/homelab-setup/install.sh | bash -s -- \
+curl -sSL https://fabioassuncao.com/gh/homelab-setup/install.sh | bash -s -- \
 --help
 ~~~
 
@@ -21,7 +21,7 @@ You can get help by passing the `-h` option.
 ~~~
 Script for initial configurations of Docker, Docker Swarm and CapRover.
 USAGE:
-    wget -qO- https://fabioassuncao.com/gh/homelab-setup/install.sh | bash -s -- [OPTIONS]
+    curl -sSL https://fabioassuncao.com/gh/homelab-setup/install.sh | bash -s -- [OPTIONS]
 
 OPTIONS:
 -h|--help                   Print help
